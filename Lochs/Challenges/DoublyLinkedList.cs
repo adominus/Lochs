@@ -41,7 +41,8 @@ public class ListHelper
     }
     
     public DoublyLinkedList Insert(string value, string after)
-    { 
+    {
+        throw new NotImplementedException();
     }
 
     private DoublyLinkedList Find(string value)

@@ -2,7 +2,7 @@ namespace Lochs;
 
 public class LochsRunner
 {
-    private ErrorReporter _errorReporter; 
+    private ErrorReporter _errorReporter = new(); 
     
     public void RunFile(string file)
     {
