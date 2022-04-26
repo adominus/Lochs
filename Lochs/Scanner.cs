@@ -85,6 +85,10 @@ public class Scanner
                     while (Peek() != '\n' && !IsAtEnd())
                         Advance();
                 }
+                else if (Match('*'))
+                {
+                    AddBlockComment();
+                }
                 else
                 {
                     AddToken(TokenType.Slash);
@@ -181,6 +185,39 @@ public class Scanner
 
         var literal = _source.Substring(_start + 1, _current - _start - 2);
         AddToken(TokenType.String, literal);
+    }
+
+    private void AddBlockComment()
+    {
+        while (Peek() != '*' && 
+               PeekNext() != '/' && 
+               !IsAtEnd())
+        {
+            if (Peek() == '\n')
+                _line++;
+
+            Advance();
+        }
+
+        if (IsAtEnd())
+        {
+            _errorReporter.Error(_line, "Unterminated block comment");
+            return; 
+        }
+
+        // Closing *
+        Advance();
+
+        if (IsAtEnd())
+        {
+            _errorReporter.Error(_line, "Unterminated block comment");
+            return; 
+        }
+        
+        // Closing /
+        Advance();
+        
+        // Not recording it as it's a comment 
     }
 
     private bool Match(char c)
