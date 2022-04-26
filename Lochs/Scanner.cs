@@ -106,24 +106,39 @@ public class Scanner
                 AddStringLiteral();
                 break;
 
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                AddNumber();
-                break;
-            // LEFT OFF 4.7 Reserved Words and Identifiers 
-
             default:
-                _errorReporter.Error(_line, "Unexpected token");
+                if (IsDigit(c))
+                {
+                    AddNumber();
+                }
+                else if (IsAlphaOrUnderscore(c))
+                {
+                    AddIdentifier();
+                    // LEFT OFF 4.7 Reserved Words and Identifiers 
+                }
+                else
+                {
+                    _errorReporter.Error(_line, "Unexpected token");
+                }
+
                 break;
         }
+    }
+
+    // Called identifier() in the book 
+    private void AddIdentifier()
+    {
+        while (IsAlphaNumericOrUnderscore(Peek()))
+            Advance();
+
+        var identifier = _source.Substring(_start, _current - _start);
+        var tokenType = TokenType.Identifier;
+        if (!ReservedKeywords.TryGetValue(identifier, out tokenType))
+        {
+            tokenType = TokenType.Identifier;
+        }
+        
+        AddToken(tokenType);
     }
 
     // Called number() in the book 
@@ -142,9 +157,6 @@ public class Scanner
 
         var number = double.Parse(_source.Substring(_start, _current - _start));
         AddToken(TokenType.Number, number);
-
-        bool IsDigit(char c)
-            => c >= '0' && c <= '9';
     }
 
     // Called string() in the book 
@@ -199,6 +211,17 @@ public class Scanner
         return _source[_current + 1];
     }
 
+    private bool IsAlphaOrUnderscore(char c)
+        => (c >= 'a' && c <= 'z') ||
+           (c >= 'A' && c <= 'Z') ||
+           c == '_';
+
+    private bool IsDigit(char c)
+        => c >= '0' && c <= '9';
+
+    private bool IsAlphaNumericOrUnderscore(char c)
+        => IsAlphaOrUnderscore(c) || IsDigit(c);
+
     private bool IsAtEnd()
         => _current >= _source.Length;
 
@@ -210,8 +233,28 @@ public class Scanner
 
     private void AddToken(TokenType tokenType, object literal)
     {
-        var text = _source.Substring(_start, _current);
+        var text = _source.Substring(_start, _current - _start);
         var token = new Token(tokenType, text, literal, _line);
         _tokens.Add(token);
     }
+
+    private static IDictionary<string, TokenType> ReservedKeywords = new Dictionary<string, TokenType>()
+    {
+        {"and", TokenType.And},
+        {"class", TokenType.Class},
+        {"else", TokenType.Else},
+        {"false", TokenType.False},
+        {"fun", TokenType.Fun},
+        {"for", TokenType.For},
+        {"if", TokenType.If},
+        {"nil", TokenType.Nil},
+        {"or", TokenType.Or},
+        {"print", TokenType.Print},
+        {"return", TokenType.Return},
+        {"super", TokenType.Super},
+        {"this", TokenType.This},
+        {"true", TokenType.True},
+        {"var", TokenType.Var},
+        {"while", TokenType.While},
+    };
 }
