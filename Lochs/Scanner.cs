@@ -16,7 +16,7 @@ public class Scanner
         _tokens = new List<Token>();
     }
 
-    public IEnumerable<Token> ScanTokens()
+    public IList<Token> ScanTokens()
     {
         while (!IsAtEnd())
         {

@@ -4,7 +4,7 @@ public class Token
 {
     private readonly TokenType _tokenType;
     private readonly string _lexeme;
-    private readonly object? _literal;
+    private readonly object _literal;
     private readonly int _line;
 
     public Token(TokenType tokenType, string lexeme, object? literal, int line)
@@ -17,6 +17,12 @@ public class Token
 
     public string Lexeme => _lexeme;
 
+    public TokenType TokenType => _tokenType;
+
+    public object Literal => _literal;
+
+    public int Line => _line;
+
     public override string ToString()
-        => $"{_tokenType} {_lexeme} {_literal}";
+        => $"{TokenType} {_lexeme} {Literal}";
 }
