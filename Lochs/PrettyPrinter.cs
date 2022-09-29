@@ -10,6 +10,9 @@ namespace Lochs
             return expr.Accept(this);
         }
 
+        public string VisitTernary(Ternary ternary)
+            => Parenthesize($"{ternary.Condition.Accept(this)} ?", ternary.ResultIfTrue, new Literal(":"), ternary.ResultIfFalse);
+
         public string VisitBinary(Binary binary)
             => Parenthesize(binary.Operator.Lexeme, binary.Left, binary.Right);
 

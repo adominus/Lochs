@@ -11,6 +11,7 @@ public enum TokenType
     Equal, EqualEqual,
     Greater, GreaterEqual,
     Less, LessEqual,
+    QuestionMark, Colon,
 
     // Literals.
     Identifier, String, Number,

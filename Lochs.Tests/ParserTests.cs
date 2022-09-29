@@ -22,8 +22,8 @@ namespace Lochs.Tests
             // Then
             Assert.IsType<Literal>(expression);
             var literal = expression as Literal;
-            Assert.Equal(true, literal!.Value); 
-        } 
+            Assert.Equal(true, literal!.Value);
+        }
 
         [Fact]
         public void Given_tokens_then_should_create_expression()
@@ -46,7 +46,7 @@ namespace Lochs.Tests
 
             // Then
             Assert.Equal("(+ 1 2)", result);
-        } 
+        }
 
         [Fact]
         public void Given_tokens_of_differing_precedence_then_should_create_expression_with_correct_precedence()
@@ -78,6 +78,71 @@ namespace Lochs.Tests
             // Then
             Assert.Equal("(> (- (+ 1 2) (/ (* 3 4) 5)) 6)", result);
 
-        } 
+        }
+
+        [Fact]
+        public void Given_tokens_with_ternary_operator_then_should_return_with_expected_precedence()
+        {
+            // Given
+            var tokens = new[]
+            {
+                new Token(TokenType.Number, "1", 1, 0),
+                new Token(TokenType.Greater, ">", null, 0),
+                new Token(TokenType.Number, "2", 2, 0),
+                new Token(TokenType.QuestionMark, "?", null, 0),
+                new Token(TokenType.Number, "3", 3, 0),
+                new Token(TokenType.Colon, ":", null, 0),
+                new Token(TokenType.Number, "4", 4, 0),
+                new Token(TokenType.Eof, null, null, 0)
+            };
+
+            var errorReporter = new ErrorReporter();
+
+            var prettyPrinter = new PrettyPrinter();
+            var sut = new Parser(tokens, errorReporter);
+
+            // When
+            var expression = sut.Parse();
+
+            var result = prettyPrinter.Print(expression);
+
+            // Then
+            Assert.Equal("((> 1 2) ? 3 : 4)", result);
+        }
+
+        [Fact]
+        public void Given_tokens_with_nested_ternary_operator_then_should_return_with_expected_precedence()
+        {
+            // Given
+            var tokens = new[]
+            {
+                new Token(TokenType.String, "a", "a", 0),
+                new Token(TokenType.QuestionMark, "?", null, 0),
+
+                new Token(TokenType.String, "b", "b", 0),
+                new Token(TokenType.QuestionMark, "?", null, 0),
+                new Token(TokenType.String, "c", "c", 0),
+                new Token(TokenType.Colon, ":", null, 0),
+                new Token(TokenType.String, "d", "d", 0),
+
+                new Token(TokenType.Colon, ":", null, 0),
+                new Token(TokenType.String, "e", "e", 0),
+                new Token(TokenType.Eof, null, null, 0)
+            };
+
+            var errorReporter = new ErrorReporter();
+
+            var prettyPrinter = new PrettyPrinter();
+            var sut = new Parser(tokens, errorReporter);
+
+            // When
+            var expression = sut.Parse();
+
+            var result = prettyPrinter.Print(expression);
+
+            // Then
+            Assert.Equal("(a ? (b ? c : d) : e)", result);
+        }
+
     }
 }

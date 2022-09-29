@@ -24,6 +24,11 @@ namespace Lochs
         public string VisitLiteral(Literal literal)
             => literal.Value?.ToString() ?? "nil";
 
+        public string VisitTernary(Ternary ternary)
+        {
+            throw new NotImplementedException();
+        }
+
         public string VisitUnary(Unary unary)
             => $"{unary.Right} {unary.Operator}";
     }

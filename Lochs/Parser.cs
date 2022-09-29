@@ -30,7 +30,26 @@ namespace Lochs
         }
 
         private Expr Expression()
-            => Equality();
+            => Ternary();
+
+        private Expr Ternary()
+        {
+            var expr = Equality();
+
+            // a ? b : ( c ? d : e ) 
+            while (ConsumeIfMatch(TokenType.QuestionMark))
+            {
+                var resultIfTrue = Expression();
+
+                Consume(TokenType.Colon, "Expected ':' after ternary");
+
+                var resultIfFalse = Expression();
+
+                expr = new Ternary(expr, resultIfTrue, resultIfFalse);
+            }
+
+            return expr; 
+        }
 
         private Expr Equality()
         {
