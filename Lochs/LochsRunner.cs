@@ -35,10 +35,14 @@ public class LochsRunner
     {
         var scanner = new Scanner(string.Join(Environment.NewLine, source), _errorReporter);
         var tokens = scanner.ScanTokens();
+        var parser = new Parser(tokens, _errorReporter);
+        var expression = parser.Parse();
 
-        foreach (var token in tokens)
+        if (_errorReporter.HadError)
         {
-            Console.WriteLine(token);
+            return; 
         }
+
+        Console.WriteLine(new PrettyPrinter().Print(expression));
     }
 }

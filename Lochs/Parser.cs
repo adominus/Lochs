@@ -10,11 +10,23 @@ namespace Lochs
         private int _current = 0;
 
         public Parser(
-            IList<Token> tokens, 
+            IList<Token> tokens,
             IErrorReporter errorReporter)
         {
             _tokens = tokens;
             _errorReporter = errorReporter;
+        }
+
+        public Expr Parse()
+        {
+            try
+            {
+                return Expression();
+            }
+            catch (ParserException)
+            {
+                return null;
+            }
         }
 
         private Expr Expression()
@@ -108,14 +120,14 @@ namespace Lochs
                 return new Grouping(expr);
             }
 
-            throw new InvalidOperationException("Unexpected token type");
+            throw Error(Peek(), "Expect expression. ");
         }
 
         private Token Consume(TokenType tokenType, string errorIfDoesNotMatch)
         {
             if (Check(tokenType))
             {
-                return Advance(); 
+                return Advance();
             }
 
             throw Error(Peek(), errorIfDoesNotMatch);
@@ -126,6 +138,35 @@ namespace Lochs
             _errorReporter.Error(token, message);
 
             return new ParserException(message);
+        }
+
+        private void Synchronize()
+        {
+            Advance();
+
+            while (!IsAtEnd())
+            {
+                if (Previous().TokenType == TokenType.Semicolon)
+                {
+                    return;
+                }
+
+                switch(Peek().TokenType)
+                {
+                    case TokenType.Class:
+                    case TokenType.Fun:
+                    case TokenType.For:
+                    case TokenType.Var:
+                    case TokenType.If:
+                    case TokenType.While:
+                    case TokenType.Print:
+                    case TokenType.Return:
+                        return;
+
+                }
+
+                Advance(); 
+            }
         }
 
         private Token Previous()
