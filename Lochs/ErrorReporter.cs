@@ -21,6 +21,14 @@ public class ErrorReporter : IErrorReporter
         }
     }
 
+    public void Error(RuntimeException ex)
+    {
+        Console.Error.WriteLine(ex.Message);
+        Console.Error.WriteLine($"[Line {ex.Token.Line}]");
+
+        HadError = true;
+    }
+
     private void Report(int line, string where, string message)
     {
         Console.Error.WriteLine($"[Line {line}] Error {where}: {message}");

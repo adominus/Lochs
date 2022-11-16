@@ -110,6 +110,14 @@ public class Scanner
                 AddStringLiteral();
                 break;
 
+            case ':':
+                AddToken(TokenType.Colon);
+                break;
+
+            case '?':
+                AddToken(TokenType.QuestionMark);
+                break;
+
             default:
                 if (IsDigit(c))
                 {

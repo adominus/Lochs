@@ -2,8 +2,14 @@ namespace Lochs;
 
 public class LochsRunner
 {
-    private ErrorReporter _errorReporter = new(); 
-    
+    private ErrorReporter _errorReporter = new();
+    private static IInterpreter _interpreter;
+
+    public LochsRunner()
+    {
+        _interpreter = new Interpreter(_errorReporter);
+    }
+
     public void RunFile(string file)
     {
         var source = File.ReadAllLines(file);
@@ -20,12 +26,12 @@ public class LochsRunner
         {
             Console.WriteLine("> ");
             var line = Console.ReadLine();
-            
+
             if (string.IsNullOrWhiteSpace(line))
             {
                 break;
             }
-            
+
             Run(line);
             _errorReporter.HadError = false;
         }
@@ -38,11 +44,14 @@ public class LochsRunner
         var parser = new Parser(tokens, _errorReporter);
         var expression = parser.Parse();
 
-        if (_errorReporter.HadError)
+        if (expression != null)
         {
-            return; 
+            _interpreter.Interpret(expression);
         }
 
-        Console.WriteLine(new PrettyPrinter().Print(expression));
+        if (_errorReporter.HadError)
+        {
+            return;
+        }
     }
 }

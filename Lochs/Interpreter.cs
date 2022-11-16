@@ -2,13 +2,41 @@
 
 namespace Lochs
 {
-    internal class Interpreter : IVisitor<object>
+    internal class Interpreter : IVisitor<object>, IInterpreter
     {
+        private readonly IErrorReporter _errorReporter;
+
+        public Interpreter(IErrorReporter errorReporter)
+        {
+            _errorReporter = errorReporter;
+        }
+
+        public string InterpretAndStringify(Expr expr)
+        {
+            var result = Evaluate(expr);
+
+            return Stringify(result);
+        }
+
+        public void Interpret(Expr expr)
+        {
+            try
+            {
+                var result = Evaluate(expr);
+
+                Console.WriteLine(Stringify(result));
+            }
+            catch (RuntimeException ex)
+            {
+                _errorReporter.Error(ex);
+            }
+        }
+
         public object VisitLiteral(Literal literal)
             => literal.Value;
 
         public object VisitGrouping(Grouping grouping)
-            => Evaluate(grouping);
+            => Evaluate(grouping.Expression);
 
         public object VisitUnary(Unary unary)
         {
@@ -86,7 +114,19 @@ namespace Lochs
 
         public object VisitTernary(Ternary ternary)
         {
-            throw new NotImplementedException();
+            var conditionResult = Evaluate(ternary.Condition);
+
+            if (conditionResult is bool result)
+            {
+                if (result)
+                {
+                    return Evaluate(ternary.ResultIfTrue);
+                }
+
+                return Evaluate(ternary.ResultIfFalse);
+            }
+
+            throw new InvalidOperationException("Unknown ternary");
         }
 
         private bool IsTruthy(object obj)
@@ -116,6 +156,11 @@ namespace Lochs
                 return false;
             }
 
+            if (a is double doubleA && b is double doubleB)
+            {
+                return doubleA == doubleB;
+            }
+
             return a == b;
         }
 
@@ -137,5 +182,26 @@ namespace Lochs
 
         private object Evaluate(Expr expr)
             => expr.Accept(this);
+
+        private static string Stringify(object o)
+        {
+            if (o == null)
+            {
+                return "nil";
+            }
+
+            if (o is double)
+            {
+                var s = o.ToString();
+                if (s.EndsWith(".0"))
+                {
+                    return s.Substring(0, s.Length - 2);
+                }
+
+                return s;
+            }
+
+            return o.ToString();
+        }
     }
 }
