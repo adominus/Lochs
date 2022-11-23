@@ -17,16 +17,43 @@ namespace Lochs
             _errorReporter = errorReporter;
         }
 
-        public Expr Parse()
+        public List<Stmt> Parse()
         {
-            try
+            var statements = new List<Stmt>();
+            while (!IsAtEnd())
             {
-                return Expression();
+                statements.Add(Statement());
             }
-            catch (ParserException)
+
+            return statements;
+        }
+
+        private Stmt Statement()
+        {
+            if (ConsumeIfMatch(TokenType.Print))
             {
-                return null;
+                return PrintStatement();
             }
+
+            return ExpressionStatement();
+        }
+
+        private Stmt PrintStatement()
+        {
+            var val = Expression();
+
+            Consume(TokenType.Semicolon, "Expect ';' after value. ");
+
+            return new Print(val);
+        }
+
+        private Stmt ExpressionStatement()
+        {
+            var val = Expression();
+
+            Consume(TokenType.Semicolon, "Expect ';' after expression. ");
+
+            return new Expression(val);
         }
 
         private Expr Expression()
