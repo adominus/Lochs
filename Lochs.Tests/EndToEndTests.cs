@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
@@ -29,7 +30,8 @@ namespace Lochs.Tests
             var expression = parser.Parse();
             var interpreter = new Interpreter(errorReporter);
 
-            return interpreter.InterpretAndStringify(expression);
+            throw new NotImplementedException("TODO");
+            //return interpreter.InterpretAndStringify(expression);
         }
 
         private class TernaryTestData : IEnumerable<object[]>

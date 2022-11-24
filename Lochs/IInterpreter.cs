@@ -4,6 +4,6 @@ namespace Lochs
 {
     internal interface IInterpreter
     {
-        void Interpret(Expr expr);
+        void Interpret(IEnumerable<Stmt> statements);
     }
 }

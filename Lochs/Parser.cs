@@ -44,7 +44,7 @@ namespace Lochs
 
             Consume(TokenType.Semicolon, "Expect ';' after value. ");
 
-            return new Print(val);
+            return new StatementPrint(val);
         }
 
         private Stmt ExpressionStatement()
@@ -53,7 +53,7 @@ namespace Lochs
 
             Consume(TokenType.Semicolon, "Expect ';' after expression. ");
 
-            return new Expression(val);
+            return new StatementExpression(val);
         }
 
         private Expr Expression()

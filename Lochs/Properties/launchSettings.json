@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Lochs": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Adam.Webb\\Personal\\Prog\\Lochs\\Lochs\\test-run.lochs"
+    }
+  }
+}

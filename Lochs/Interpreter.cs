@@ -2,7 +2,7 @@
 
 namespace Lochs
 {
-    internal class Interpreter : IVisitor<object>, IInterpreter
+    internal class Interpreter : IExpressionVisitor<object>, IStatementVisitor, IInterpreter
     {
         private readonly IErrorReporter _errorReporter;
 
@@ -18,13 +18,14 @@ namespace Lochs
             return Stringify(result);
         }
 
-        public void Interpret(Expr expr)
+        public void Interpret(IEnumerable<Stmt> statements)
         {
             try
             {
-                var result = Evaluate(expr);
-
-                Console.WriteLine(Stringify(result));
+                foreach (var stmt in statements)
+                {
+                    Execute(stmt);
+                }
             }
             catch (RuntimeException ex)
             {
@@ -129,6 +130,17 @@ namespace Lochs
             throw new InvalidOperationException("Unknown ternary");
         }
 
+        public void VisitStatementExpression(StatementExpression statementexpression)
+        {
+            Evaluate(statementexpression.Expression);
+        }
+
+        public void VisitStatementPrint(StatementPrint statementprint)
+        {
+            var result = Evaluate(statementprint.Expression);
+            Console.WriteLine(Stringify(result));
+        }
+
         private bool IsTruthy(object obj)
         {
             if (obj == null)
@@ -182,6 +194,9 @@ namespace Lochs
 
         private object Evaluate(Expr expr)
             => expr.Accept(this);
+
+        private void Execute(Stmt stmt)
+            => stmt.Accept(this);
 
         private static string Stringify(object o)
         {

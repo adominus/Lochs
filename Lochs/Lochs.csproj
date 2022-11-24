@@ -11,6 +11,9 @@
         <Generator>TextTemplatingFileGenerator</Generator>
         <LastGenOutput>AstGen.cs</LastGenOutput>
       </None>
+      <None Update="test-run.lochs">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
