@@ -16,7 +16,7 @@ public class Scanner
         _tokens = new List<Token>();
     }
 
-    public IEnumerable<Token> ScanTokens()
+    public IList<Token> ScanTokens()
     {
         while (!IsAtEnd())
         {
@@ -108,6 +108,14 @@ public class Scanner
 
             case '"':
                 AddStringLiteral();
+                break;
+
+            case ':':
+                AddToken(TokenType.Colon);
+                break;
+
+            case '?':
+                AddToken(TokenType.QuestionMark);
                 break;
 
             default:
