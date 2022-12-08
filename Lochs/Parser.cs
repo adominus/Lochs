@@ -22,10 +22,28 @@ namespace Lochs
             var statements = new List<Stmt>();
             while (!IsAtEnd())
             {
-                statements.Add(Statement());
+                statements.Add(Declaration());
             }
 
             return statements;
+        }
+
+        private Stmt Declaration()
+        {
+            try
+            {
+                if (ConsumeIfMatch(TokenType.Var))
+                {
+                    return VarDeclaration();
+                }
+
+                return Statement();
+            }
+            catch (ParserException _)
+            {
+                Synchronize();
+                return null;
+            }
         }
 
         private Stmt Statement()
@@ -56,6 +74,20 @@ namespace Lochs
             return new StatementExpression(val);
         }
 
+        private Stmt VarDeclaration()
+        {
+            var name = Consume(TokenType.Identifier, "Expected token name");
+
+            Expr initializer = null; 
+            if (ConsumeIfMatch(TokenType.Equal))
+            {
+                initializer = Expression();
+            }
+
+            Consume(TokenType.Semicolon, "Expected semicolon after variable declaration");
+            return new Var(name, initializer);  
+        }
+
         private Expr Expression()
             => Ternary();
 
@@ -75,7 +107,7 @@ namespace Lochs
                 expr = new Ternary(expr, resultIfTrue, resultIfFalse);
             }
 
-            return expr; 
+            return expr;
         }
 
         private Expr Equality()
@@ -166,6 +198,9 @@ namespace Lochs
                 return new Grouping(expr);
             }
 
+            if (ConsumeIfMatch(TokenType.Identifier))
+                return new Variable(Previous());
+
             throw Error(Peek(), "Expect expression. ");
         }
 
@@ -197,7 +232,7 @@ namespace Lochs
                     return;
                 }
 
-                switch(Peek().TokenType)
+                switch (Peek().TokenType)
                 {
                     case TokenType.Class:
                     case TokenType.Fun:
@@ -211,7 +246,7 @@ namespace Lochs
 
                 }
 
-                Advance(); 
+                Advance();
             }
         }
 
