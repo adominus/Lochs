@@ -41,5 +41,11 @@ namespace Lochs
             sb.Append(")");
             return sb.ToString();
         }
+
+        public string VisitVariable(Variable variable)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
     }
 }

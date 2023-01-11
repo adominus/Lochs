@@ -31,5 +31,11 @@ namespace Lochs
 
         public string VisitUnary(Unary unary)
             => $"{unary.Right} {unary.Operator}";
+
+        public string VisitVariable(Variable variable)
+        {
+            // TODO 
+            throw new NotImplementedException();
+        }
     }
 }

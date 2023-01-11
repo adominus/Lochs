@@ -5,6 +5,7 @@ namespace Lochs
     internal class Interpreter : IExpressionVisitor<object>, IStatementVisitor, IInterpreter
     {
         private readonly IErrorReporter _errorReporter;
+        private readonly EnvironmentMap _environment = new();
 
         public Interpreter(IErrorReporter errorReporter)
         {
@@ -54,6 +55,11 @@ namespace Lochs
             }
 
             throw new InvalidOperationException("Unknown unary");
+        }
+
+        public object VisitVariable(Variable variable)
+        {
+            return _environment.Get(variable.Name);
         }
 
         public object VisitBinary(Binary binary)
@@ -139,6 +145,17 @@ namespace Lochs
         {
             var result = Evaluate(statementprint.Expression);
             Console.WriteLine(Stringify(result));
+        }
+
+        public void VisitVar(Var varStatement)
+        {
+            object value = null;
+            if (varStatement.Initializer != null)
+            {
+                value = Evaluate(varStatement.Initializer);
+            }
+
+            _environment.Define(varStatement.Name.Lexeme, value);
         }
 
         private bool IsTruthy(object obj)

@@ -1,4 +1,21 @@
+print "";
+print "Expect one";
 print "one";
+
+print "";
+print "Expect 3";
 print 1 + 2;
+
+print "";
+print "Expect true";
 print true;
+
+print "";
+print "Expect false";
 print false;
+
+print "";
+var a = 1; 
+var b = 2; 
+print "Expect 3";
+print a + b;
