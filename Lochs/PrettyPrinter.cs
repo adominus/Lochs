@@ -47,5 +47,11 @@ namespace Lochs
             // TODO
             throw new NotImplementedException();
         }
+
+        public string VisitAssign(Assign assign)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
     }
 }

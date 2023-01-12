@@ -158,6 +158,15 @@ namespace Lochs
             _environment.Define(varStatement.Name.Lexeme, value);
         }
 
+        public object VisitAssign(Assign assign)
+        {
+            var result = Evaluate(assign.Value);
+
+            _environment.Assign(assign.Name, result);
+
+            return result; 
+        }
+
         private bool IsTruthy(object obj)
         {
             if (obj == null)

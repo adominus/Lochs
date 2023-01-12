@@ -78,18 +78,41 @@ namespace Lochs
         {
             var name = Consume(TokenType.Identifier, "Expected token name");
 
-            Expr initializer = null; 
+            Expr initializer = null;
             if (ConsumeIfMatch(TokenType.Equal))
             {
                 initializer = Expression();
             }
 
             Consume(TokenType.Semicolon, "Expected semicolon after variable declaration");
-            return new Var(name, initializer);  
+            return new Var(name, initializer);
         }
 
         private Expr Expression()
-            => Ternary();
+            => Assignment();
+
+        private Expr Assignment()
+        {
+            var expr = Ternary();
+
+            if (ConsumeIfMatch(TokenType.Equal))
+            {
+                Token equals = Previous();
+                // TODO: Why do we call assignment?
+                // Won't it definitely be >= Ternary? 
+                Expr value = Assignment();
+
+                if (expr is Variable variable)
+                {
+                    return new Assign(variable.Name, value);
+                }
+
+                // TODO: Shouldn't we be returning this? 
+                Error(equals, "Invalid assignment target");
+            }
+
+            return expr;
+        }
 
         private Expr Ternary()
         {

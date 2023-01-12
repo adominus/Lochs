@@ -4,7 +4,7 @@
     {
         private readonly Dictionary<string, object> _values = new(); 
 
-        public object Get(Token name)
+        internal object Get(Token name)
         {
             if (_values.ContainsKey(name.Lexeme))
             {
@@ -14,9 +14,19 @@
             throw new RuntimeException(name, $"Undefined variable '{name.Lexeme}'.");
         }
 
-        public void Define(string key, object value)
+        internal void Define(string key, object value)
         {
             _values[key] = value;
+        }
+
+        internal void Assign(Token name, object result)
+        {
+            if (!_values.ContainsKey(name.Lexeme))
+            {
+                throw new RuntimeException(name, $"Undefined variable '{name.Lexeme}'.");
+            }
+
+            _values[name.Lexeme] = result;
         }
     }
 }
