@@ -53,6 +53,11 @@ namespace Lochs
                 return PrintStatement();
             }
 
+            if (ConsumeIfMatch(TokenType.LeftBrace))
+            {
+                return new StatementBlock(BlockStatement().ToList());
+            }
+
             return ExpressionStatement();
         }
 
@@ -72,6 +77,16 @@ namespace Lochs
             Consume(TokenType.Semicolon, "Expect ';' after expression. ");
 
             return new StatementExpression(val);
+        }
+
+        private IEnumerable<Stmt> BlockStatement()
+        {
+            while (!Check(TokenType.RightBrace) && !IsAtEnd())
+            {
+                yield return Declaration();
+            }
+
+            Consume(TokenType.RightBrace, "Expect '}' after block");
         }
 
         private Stmt VarDeclaration()

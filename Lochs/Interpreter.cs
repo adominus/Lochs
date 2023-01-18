@@ -5,7 +5,7 @@ namespace Lochs
     internal class Interpreter : IExpressionVisitor<object>, IStatementVisitor, IInterpreter
     {
         private readonly IErrorReporter _errorReporter;
-        private readonly EnvironmentMap _environment = new();
+        private EnvironmentMap _environment = new();
 
         public Interpreter(IErrorReporter errorReporter)
         {
@@ -147,6 +147,12 @@ namespace Lochs
             Console.WriteLine(Stringify(result));
         }
 
+        public void VisitStatementBlock(StatementBlock statementblock)
+        {
+            var environment = new EnvironmentMap(_environment);
+            ExecuteBlock(statementblock.Statements, environment);
+        }
+
         public void VisitVar(Var varStatement)
         {
             object value = null;
@@ -223,6 +229,25 @@ namespace Lochs
 
         private void Execute(Stmt stmt)
             => stmt.Accept(this);
+
+        private void ExecuteBlock(List<Stmt> statements, EnvironmentMap environment)
+        {
+            var previousEnvironment = _environment;
+
+            try
+            {
+                _environment = environment;
+
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                _environment = previousEnvironment;
+            }
+        }
 
         private static string Stringify(object o)
         {

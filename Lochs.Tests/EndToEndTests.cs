@@ -13,6 +13,7 @@ namespace Lochs.Tests
         [Theory]
         [ClassData(typeof(TernaryTestData))]
         [ClassData(typeof(VariableTestData))]
+        [ClassData(typeof(ScopedVariablesTestData))]
         public void Given_expression_then_should_return_expected_output(
             string input, string[] expected, string because)
         {
@@ -86,6 +87,46 @@ a = a + 10;
 print a + b;
 ",
                     new [] { "13" },
+                    "Assignment and update"
+                };
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private class ScopedVariablesTestData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[]
+                {
+                    @"
+var a = ""global a"";
+var b = ""global b"";
+var c = ""global c"";
+{
+var a = ""outer a"";
+var b = ""outer b"";
+{
+var a = ""inner a"";
+print a;
+print b;
+print c;
+}
+print a;
+print b;
+print c;
+}
+print a;
+print b;
+print c;
+",
+                    new [] 
+                    { 
+                        "inner a", "outer b", "global c" ,
+                        "outer a", "outer b", "global c" ,
+                        "global a", "global b", "global c" 
+                    },
                     "Assignment and update"
                 };
             }
