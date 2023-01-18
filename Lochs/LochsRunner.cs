@@ -20,6 +20,15 @@ public class LochsRunner
         }
     }
 
+    public void RunSource(string source)
+    {
+        Run(source);
+        if (_errorReporter.HadError)
+        {
+            Environment.Exit(65);
+        }
+    }
+
     public void RunPrompt()
     {
         while (true)
